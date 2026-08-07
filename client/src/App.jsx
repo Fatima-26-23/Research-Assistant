@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 
+const API_BASE = 'https://research-assistant-vercel-chi.vercel.app';
+
 function parseCitations(text) {
   const paragraphs = text.split(/\n\s*\n/).filter(Boolean);
   return paragraphs.map((para) => {
@@ -42,7 +44,7 @@ export default function App() {
     setActiveSource(null);
 
     try {
-      const res = await fetch('/api/research', {
+      const res = await fetch(`${API_BASE}/api/research`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: query.trim() }),
