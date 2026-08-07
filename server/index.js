@@ -117,4 +117,4 @@ app.post('/api/research', async (req, res) => {
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`Research assistant server running on http://localhost:${PORT}`));
+export default app;
