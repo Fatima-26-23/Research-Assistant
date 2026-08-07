@@ -7,8 +7,8 @@ app.use(cors());
 app.use(express.json());
 
 const TAVILY_API_KEY = process.env.TAVILY_API_KEY;
-const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'llama3.1';
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
 
 async function tavilySearch(query) {
   const res = await fetch('https://api.tavily.com/search', {
@@ -61,28 +61,29 @@ Rules:
 SOURCES:
 ${sourceBlock}`;
 
-  const res = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${GROQ_API_KEY}`,
+    },
     body: JSON.stringify({
-      model: OLLAMA_MODEL,
-      stream: false,
+      model: GROQ_MODEL,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: query },
       ],
+      temperature: 0.3,
     }),
   });
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(
-      `Ollama request failed (${res.status}): ${text}. Is "ollama serve" running and is the model pulled?`
-    );
+    throw new Error(`Groq request failed (${res.status}): ${text}. Check GROQ_API_KEY and GROQ_MODEL.`);
   }
 
   const data = await res.json();
-  return data.message?.content || '';
+  return data.choices?.[0]?.message?.content || '';
 }
 
 app.post('/api/research', async (req, res) => {
