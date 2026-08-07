@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 
 function parseCitations(text) {
   const paragraphs = text.split(/\n\s*\n/).filter(Boolean);
